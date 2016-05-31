@@ -143,8 +143,6 @@ void MatMul(const Matrix A, const Matrix B, Matrix C) {
   cudaFree(d_C.elements); 
 }
 
-
-
 // Matrix multiplication kernel called by MatMul()
 /*
  __global__ void MatMulKernel(Matrix A, Matrix B, Matrix C)
