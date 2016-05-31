@@ -18,37 +18,29 @@ typedef struct {
 
 
 // Get a matrix element
-__device__ float GetElement(const Matrix A, int row, int col)
-{
-    return A.elements[row * A.stride + col];
-}
+__device__ float GetElement(const Matrix A, int row, int col) { 
+  return A.elements[row * A.stride + col]; 
+} 
 
-// Set a matrix element
-__device__ void SetElement(Matrix A, int row, int col,
-                           float value)
-{
-    A.elements[row * A.stride + col] = value;
-}
+// Set a matrix element 
+__device__ void SetElement(Matrix A, int row, int col, float value) { 
+  A.elements[row * A.stride + col] = value; 
+} 
 
-// Get the BLOCK_SIZExBLOCK_SIZE sub-matrix Asub of A that is
-// located col sub-matrices to the right and row sub-matrices down
-// from the upper-left corner of A
- __device__ Matrix GetSubMatrix(Matrix A, int row, int col) 
-{
-    Matrix Asub;
-    Asub.width    = BLOCK_SIZE;
-    Asub.height   = BLOCK_SIZE;
-    Asub.stride   = A.stride;
-    Asub.elements = &A.elements[A.stride * BLOCK_SIZE * row
-                                         + BLOCK_SIZE * col];
-    return Asub;
+// Get the BLOCK_SIZExBLOCK_SIZE sub-matrix Asub of A that is 
+// located col sub-matrices to the right and row sub-matrices down 
+// from the upper-left corner of A 
+__device__ Matrix GetSubMatrix(Matrix A, int row, int col) { 
+  Matrix Asub; 
+  Asub.width = BLOCK_SIZE; 
+  Asub.height = BLOCK_SIZE; 
+  Asub.stride = A.stride; 
+  Asub.elements = &A.elements[A.stride * BLOCK_SIZE * row + BLOCK_SIZE * col]; 
+  return Asub; 
 }
-
 
 // Forward declaration of the matrix multiplication kernel
 __global__ void MatMulKernel(const Matrix, const Matrix, Matrix);
-
-
 
 
 
@@ -276,10 +268,8 @@ void print_Matrix(Matrix A)
 }
 
 
-
 int main(void)
 {
-
     srand(time(0));
     int n = 1 << 3;
     Matrix A, B, C;
