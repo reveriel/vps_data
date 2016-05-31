@@ -9,10 +9,7 @@ typedef struct {
     float* elements;
 } Matrix;
 
-// thread block size
-#define BLOCK_SIZE 16
 
-__global__ void MatMulKernel(const Matrix, const Matrix, Matrix);
 
 
 //a h w  B h w    C 
@@ -31,18 +28,6 @@ void MatMul(const Matrix A, const Matrix B, Matrix C)
 }
 
 
-__global__ void MatMulKernel(Matrix A, Matrix B, Matrix C)
-{
-     float Cvalue = 0;
-     int row = blockIdx.y * blockDim.y + threadIdx.y;
-     int col = blockIdx.x * blockDim.x + threadIdx.x;
-     for (int e = 0;  e < A.width; ++e)
-         Cvalue += A.elements[row * A.width + e]
-             * B.elements[e * B.width + col];
-     C.elements[row * C.width + col] = Cvalue;
-}
-
-
 void fill_Matrix(Matrix A)
 {
     for (int i = 0; i < A.height ; i++) {
@@ -54,19 +39,26 @@ void fill_Matrix(Matrix A)
 
 void print_Matrix(Matrix A)
 {
-    for (int i = 0; i < A.height; i++) {
-        for (int j = 0; j < A.width; j++) {
-            printf("%4.1f ", A.elements[i * A.width + j]);
-        }
-        printf("\n");
-    }
+    /*for (int i = 0; i < A.height; i++) {*/
+        /*for (int j = 0; j < A.width; j++) {*/
+            /*printf("%4.1f ", A.elements[i * A.width + j]);*/
+        /*}*/
+        /*printf("\n");*/
+    /*}*/
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
+    if (argc != 2) {
+        printf("usage: n\n");
+        return -1;
+    }
+    int nnn = atoi(argv[1]);
+
+    int n = 1 << nnn;
 
     srand(time(0));
-    int n = 1 << 3;
+
     Matrix A, B, C;
     A.width = A.height = n;
     A.elements = (float *)malloc(sizeof(float) * n * n);

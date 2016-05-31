@@ -154,19 +154,28 @@ void fill_Matrix(Matrix A)
 
 void print_Matrix(Matrix A)
 {
+/*
     for (int i = 0; i < A.height; i++) {
         for (int j = 0; j < A.width; j++) {
             printf("%4.1f ", A.elements[i * A.width + j]);
         }
         printf("\n");
     }
+    */
 }
 
-int main(void)
+int main(int argc, char ** argv)
 {
 
+    if (argc != 2) {
+        printf("usage: n\n");
+        return -1;
+    }
+    int nnn = atoi(argv[1]);
+
+    int n = 1 << nnn;
     srand(time(0));
-    int n = 1 << 3;
+
     Matrix A, B, C;
     A.width = A.height = n;
     A.elements = (float *)malloc(sizeof(float) * n * n);
