@@ -49,8 +49,6 @@ __device__ void SetElement(Matrix A, int row, int col,
 __global__ void MatMulKernel(const Matrix, const Matrix, Matrix);
 
 
-// Forward declaration of the matrix multiplication kernel
-__global__ void MatMulKernel(const Matrix, const Matrix, Matrix);
 
 // Matrix multiplication - Host code
 // Matrix dimensions are assumed to be multiples of BLOCK_SIZE
@@ -81,10 +79,14 @@ void MatMul(const Matrix A, const Matrix B, Matrix C)
     dim3 dimGrid(B.width / dimBlock.x, A.height / dimBlock.y);
     MatMulKernel<<<dimGrid, dimBlock>>>(d_A, d_B, d_C);
 
+
+    cudaError_t err = cudaThreadSynchronize();
+    printf("Run kernel: %s\n", cudaGetErrorString(err));
+
     // Read C from device memory
     cudaMemcpy(C.elements, d_C.elements, size,
                cudaMemcpyDeviceToHost);
-
+    
     // Free device memory
     cudaFree(d_A.elements);
     cudaFree(d_B.elements);
@@ -150,98 +152,50 @@ void MatMul(const Matrix A, const Matrix B, Matrix C)
 }
 
 
-void MatMul(const Matrix A, const Matrix B, Matrix C)
+void fill_Matrix(Matrix A)
 {
-    Matrix d_A;
-    d_A.width = A.width;
-    d_A.height = A.height;
-    size_t size  = A.width * A.height * sizeof(float);
-    cudaMalloc(&d_A.elements, size);
-    cudaMemcpy(d_A.elements, A.elements, size,
-            cudaMemcpyHostToDevice);
-    Matrix d_B;
-    d_B.width = B.width;
-    d_B.height = B.height;
-    size = B.width * B.height * sizeof(float);
-    cudaMalloc(&d_B.elements, size);
-    cudaMemcpy(d_B.elements, B.elements, size,
-            cudaMemcpyHostToDevice);
-
-    Matrix d_C;
-    d_C.width = C.width; d_C.height = C.height;
-    size = C.width * C.height * sizeof(float);
-    cudaMalloc(&d_C.elements, size);
-
-    dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
-    dim3 dimGrid(B.width / dimBlock.x, A.height / dimBlock.y);
-    MatMulKernel<<<dimGrid, dimBlock>>>(d_A, d_B, d_C);
-
-    cudaMemcpy(C.elements, d_C.elements, size,
-            cudaMemcpyDeviceToHost);
-
-    cudaFree(d_A.elements);
-    cudaFree(d_B.elements);
-    cudaFree(d_C.elements);
-}
-
-__global__ void MatMulKernel(Matrix A, Matrix B, Matrix C)
-{
-     float Cvalue = 0;
-     int row = blockIdx.y * blockDim.y + threadIdx.y;
-     int col = blockIdx.x * blockDim.x + threadIdx.x;
-     for (int e = 0;  e < A.width; ++e)
-         Cvalue += A.elements[row * A.width + e]
-             * B.elements[e * B.width + col];
-     C.elements[row * C.width + col] = Cvalue;
-}
-
-
-void init_Matrix(Matrix **ppA, int n)
-{
-    *ppA = (Matrix *)malloc(sizeof(Matrix));
-    (*ppA)->width = (*ppA)->height = n;
-    (*ppA)->elements = (float *)malloc(n * n * sizeof(float));
-}
-
-void fill_Matrix(Matrix *pA)
-{
-    srand(time(0));
-    for (int i = 0; i < pA->height ; i++) {
-        for (int j = 0; j < pA->width; j++) {
-            pA->elements[i * pA->height + j] = rand() / RAND_MAX * 10;
+    for (int i = 0; i < A.height ; i++) {
+        for (int j = 0; j < A.width; j++) {
+            A.elements[i * A.width + j] = rand() / (float)RAND_MAX * 10;
         }
     }
 }
 
-void free_Matrix(Matrix *pA )
+void print_Matrix(Matrix A)
 {
-    free(pA->elements);
-    free(pA);
-}
-
-void print_Matrix(Matrix *pA)
-{
-    for (int i = 0; i < pA->height; i++) {
-        for (int j = 0; j < pA->width; j++) {
-            printf("%4.1f ", pA->elements[i * pA->height + j]);
+    for (int i = 0; i < A.height; i++) {
+        for (int j = 0; j < A.width; j++) {
+            printf("%4.1f ", A.elements[i * A.width + j]);
         }
         printf("\n");
     }
 }
 
+
+
 int main(void)
 {
-    int n = 1 << 10;
-    Matrix *pA, *pB, *pC;
-    init_Matrix(&pA, n);
-    init_Matrix(&pB, n);
-    init_Matrix(&pC, n);
-    fill_Matrix(pA);
-    print_Matrix(pA);
-    printf("\n");
-    fill_Matrix(pB);
-    print_Matrix(pB);
+
+    srand(time(0));
+    int n = 1 << 3;
+    Matrix A, B, C;
+    A.width = A.height = n;
+    A.elements = (float *)malloc(sizeof(float) * n * n);
+    B.width = B.height = n;
+    B.elements = (float *)malloc(sizeof(float) * n * n);
+    C.width = C.height = n;
+    C.elements = (float *)malloc(sizeof(float) * n * n);
+
+    fill_Matrix(A);
+    print_Matrix(A);
     printf("\n");
 
-    MatMul(*pA, *pB, *pC);
+    fill_Matrix(B);
+    print_Matrix(B);
+    printf("\n");
+
+    MatMul(A, B, C);
+
+    print_Matrix(C);
+
 }
