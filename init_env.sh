@@ -1,10 +1,13 @@
 #!/bin/bash
 
+sudo apt-get install zsh
 sudo su
-apt-get install zsh
 chsh ubuntu /bin/zsh
-cp .zshrc ~
-source .zshrc
+exit
+
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+
+#./spf13_install.sh
 
 
 
