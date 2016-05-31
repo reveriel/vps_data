@@ -86,7 +86,7 @@ void free_Matrix(Matrix *pA )
     free(pA);
 }
 
-void prinn_Matrix(Matrix *pA)
+void print_Matrix(Matrix *pA)
 {
     for (int i = 0; i < pA->height; i++) {
         for (int j = 0; j < pA->width; j++) {
@@ -96,19 +96,3 @@ void prinn_Matrix(Matrix *pA)
     }
 }
 
-int main(void)
-{
-    int n = 1 << 10;
-    Matrix *pA, *pB, *pC;
-    init_Matrix(&pA, n);
-    init_Matrix(&pB, n);
-    init_Matrix(&pC, n);
-    fill_Matrix(pA);
-    print_Matrix(pA);
-    printf("\n");
-    fill_Matrix(pB);
-    print_Matrix(pB);
-    printf("\n");
-
-    MatMul(*pA, *pB, *pC);
-}
