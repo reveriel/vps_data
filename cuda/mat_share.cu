@@ -96,18 +96,18 @@ void MatMul(const Matrix A, const Matrix B, Matrix C) {
   d_A.height = A.height; 
   size_t size = A.width * A.height * sizeof(float); 
   cudaError_t err = cudaMalloc(&d_A.elements, size); 
-  printf("CUDA malloc A: %s\n",cudaGetErrorString(err)); 
+  /*printf("CUDA malloc A: %s\n",cudaGetErrorString(err)); */
   err = cudaMemcpy(d_A.elements, A.elements, size, cudaMemcpyHostToDevice); 
-  printf("Copy A to device: %s\n",cudaGetErrorString(err)); 
+  /*printf("Copy A to device: %s\n",cudaGetErrorString(err)); */
 
   Matrix d_B; 
   d_B.width = d_B.stride = B.width; 
   d_B.height = B.height; 
   size = B.width * B.height * sizeof(float); 
   err = cudaMalloc(&d_B.elements, size); 
-  printf("CUDA malloc B: %s\n",cudaGetErrorString(err));
+  /*printf("CUDA malloc B: %s\n",cudaGetErrorString(err));*/
   err = cudaMemcpy(d_B.elements, B.elements, size, cudaMemcpyHostToDevice);
-  printf("Copy B to device: %s\n",cudaGetErrorString(err)); 
+  /*printf("Copy B to device: %s\n",cudaGetErrorString(err)); */
 
   // Allocate C in device memory 
   Matrix d_C; 
@@ -115,14 +115,14 @@ void MatMul(const Matrix A, const Matrix B, Matrix C) {
   d_C.height = C.height; 
   size = C.width * C.height * sizeof(float); 
   err = cudaMalloc(&d_C.elements, size); 
-  printf("CUDA malloc C: %s\n",cudaGetErrorString(err));
+  /*printf("CUDA malloc C: %s\n",cudaGetErrorString(err));*/
 
   // Invoke kernel 
   dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE); 
   dim3 dimGrid(B.width / dimBlock.x, A.height / dimBlock.y); 
     MatMulKernel<<<dimGrid, dimBlock>>>(d_A, d_B, d_C); 
     err = cudaThreadSynchronize();
-    printf("Run kernel: %s\n", cudaGetErrorString(err));
+    /*printf("Run kernel: %s\n", cudaGetErrorString(err));*/
 
   // Read C from device memory 
   err = cudaMemcpy(C.elements, d_C.elements, size, cudaMemcpyDeviceToHost); 
@@ -286,14 +286,14 @@ int main(int argc, char ** argv)
     C.elements = (float *)malloc(sizeof(float) * n * n);
 
     fill_Matrix(A);
-    print_Matrix(A);
-    printf("\n");
+    /*print_Matrix(A);*/
+    /*printf("\n");*/
 
     fill_Matrix(B);
-    print_Matrix(B);
-    printf("\n");
+    /*print_Matrix(B);*/
+    /*printf("\n");*/
     MatMul(A, B, C);
 
-    print_Matrix(C);
+    /*print_Matrix(C);*/
 
 }
