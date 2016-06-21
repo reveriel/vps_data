@@ -3,20 +3,29 @@
 #include <stdlib.h>
 #include <assert.h>
 
-int primes[10000 * 1000];
+#include "config.h"
+#include "../common/stopwatch.h"
+
+
+
+
+int primes[N];
 
 
 int count_primes(int n);
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2) {
-        printf("usage : prime <n>\n");
-        return -1;
-    }
-    int n = atoi(argv[1]);
+    //if (argc != 2) {
+        //printf("usage : prime <n>\n");
+        //return -1;
+    //}
+    //int n = atoi(argv[1]);
+    int n = N;
     assert(n >= 2);
+    stopwatch_restart();
     int cnt = count_primes(n);
+    printf("time = %llu us\n", (long long unsigned)stopwatch_record());
     printf("cnt = %d\n", cnt);
     return 0;
 }
