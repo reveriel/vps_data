@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <omp.h>
-
-#include "config.h"
 
 #include "../common/stopwatch.h"
+#include "config.h"
+
+#include <cuda_runtime.h>
+
 
 
 double a[N][N];
@@ -38,9 +39,29 @@ int main(void) {
     fill_mat((double*)a);
     // print_mat((double*)a);
 
-    /*
     stopwatch_restart();
-    // omp_set_num_threads(4);
+    // assume L[i][i] == 1
+    // #pragma omp parallel for
+    // for (size_t j = 0; j < N; j++){
+    //     for (size_t i = 0; i < N; i++){
+    //         if(i <= j){
+    //             double sum = 0;
+    //             for (int k = 0; k < i; k++)
+    //                 sum += a[i][k] * a[k][j];
+    //             a[i][j] -= sum;
+    //         }
+    //         if(i > j){
+    //             double sum = 0;
+    //             for (int k = 0; k < j; k++)
+    //                 sum += a[i][k] * a[k][j];
+    //             a[i][j] = (a[i][j] - sum) / a[j][j];
+    //         }
+    //     }
+    // }
+    //
+
+    //LU-decomposition based on Gaussian Elimination
+    // - Arranged so that the multiplier doesn't have to be computed multiple times
     for(int k = 0; k < N-1; k++){ //iterate over rows/columns for elimination
         // The "multiplier" is the factor by which a row is multiplied when
         //  being subtracted from another row.
@@ -58,34 +79,7 @@ int main(void) {
         }
     }
 
-    printf("c :time = %llu us\n", (long long unsigned)stopwatch_record());
-
-    */
-
-    //////////////////////////////////////////////////////////////
-    stopwatch_restart();
-
-    // omp_set_num_threads(4);
-    for(int k = 0; k < N-1; k++){ //iterate over rows/columns for elimination
-        // The "multiplier" is the factor by which a row is multiplied when
-        //  being subtracted from another row.
-        for(int row = k + 1; row < N; row++){
-            a[row][k] /= a[k][k];
-        }
-        // the multiplier only depends on (k,row),
-        // it is invariant with respect to col
-
-        //Eliminate entries in sub (subtract rows)
-        #pragma omp parallel for shared(a,k) num_threads(NUM_THREADS)
-        for (int i = k + 1; i < N; i++) {
-            const double aik = a[i][k];
-            for (int j = k + 1; j < N; j++) {
-                a[i][j] -= aik * a[k][j];
-            }
-        }
-    }
-
-    printf("mp:time = %llu us\n", (long long unsigned)stopwatch_record());
+    printf("time = %llu us\n", (long long unsigned)stopwatch_record());
 
     // print_mat((double*)a);
 

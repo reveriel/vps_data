@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include <omp.h>
+#include "config.h"
+#include "../common/stopwatch.h"
+
 /*#define M(row, col)  *(M.elements + (row) (*) M.width + col)*/
 typedef struct {
     int width;
@@ -10,11 +14,10 @@ typedef struct {
 } Matrix;
 
 
-
-
 //a h w  B h w    C 
 void MatMul(const Matrix A, const Matrix B, Matrix C)
 {
+#pragma omp parallel for num_threads(NUM_THREADS)
     for (int i = 0; i < A.height; i++) {
         for (int j = 0; j < B.width; j++) {
             C.elements[i * C.width + j] = 0;
@@ -49,13 +52,14 @@ void print_Matrix(Matrix A)
 
 int main(int argc, char **argv)
 {
-    if (argc != 2) {
-        printf("usage: n\n");
-        return -1;
-    }
-    int nnn = atoi(argv[1]);
+//    if (argc != 2) {
+ //       printf("usage: n\n");
+  //      return -1;
+   // }
+    //int nnn = atoi(argv[1]);
 
-    int n = 1 << nnn;
+    //int n = 1 << nnn;
+    int n = N;
 
     srand(time(0));
 
@@ -69,15 +73,18 @@ int main(int argc, char **argv)
 
 
     fill_Matrix(A);
-    print_Matrix(A);
-    printf("\n");
+    //print_Matrix(A);
+    //printf("\n");
 
     fill_Matrix(B);
-    print_Matrix(B);
-    printf("\n");
+    //print_Matrix(B);
+    //printf("\n");
 
+
+    stopwatch_restart();
     MatMul(A, B, C);
+    printf("time = %llu us \n", (long long unsigned)stopwatch_record());
 
-    print_Matrix(C);
+    //print_Matrix(C);
 
 }

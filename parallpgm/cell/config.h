@@ -1,8 +1,8 @@
-#define N 4000
-#define NUM_GEN 50
+#define N 1000
+#define NUM_GEN 10000
 
-#define NUM_THREADS 1
+#define NUM_THREADS 8
 
 
 
-#define  BLOCK_SIZE 128
+#define  BLOCK_SIZE 64

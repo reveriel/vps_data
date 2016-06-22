@@ -1,1 +1,2 @@
-#define N 3000
+#define N 2000
+#define NUM_THREADS 1

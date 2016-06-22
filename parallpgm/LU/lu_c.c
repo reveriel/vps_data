@@ -77,7 +77,7 @@ int main(void) {
         }
     }
 
-    printf("time = %llu us\n", stopwatch_record());
+    printf("time = %llu us\n", (long long unsigned)stopwatch_record());
 
     // print_mat((double*)a);
 
