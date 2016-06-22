@@ -14,6 +14,9 @@
 #include <time.h>
 #include <stdlib.h>
 
+#include "config.h"
+#include "../common/stopwatch.h"
+
 #define M(mat,x,y,n)  (*((mat) + (x) * (n) + (y)))
 
 // random init data
@@ -30,10 +33,17 @@ int main(int argc, char *argv[])
     int n = 10;
     int numGen = 10;
 
+    n = N;
+    numGen = NUM_GEN;
+
     // init data strucur
     char *mat = (char*)malloc(sizeof(char) * n * n);
+    if (mat == 0)
+        puts("error alloc:");
     // init mat;
     init_mat(mat, n);
+
+    stopwatch_restart();
 
     for (int i = 0; i < numGen; i++) {
         // base and the current state , calculate the next state;
@@ -41,6 +51,9 @@ int main(int argc, char *argv[])
         // shift state
         shift_state(mat, n);
     }
+
+    printf("time = %llu\n", (long long unsigned)stopwatch_record());
+
     return 0;
 }
 
@@ -49,7 +62,7 @@ void init_mat(char *mat, int n)
     srand(time(0));
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j ++) {
-            M(mat,i,j,n) = rand() % 2;
+            M(mat,i,j,n) = rand() & 1;
         }
     }
 }
@@ -59,7 +72,7 @@ static inline int alive_now(char *mat, int i, int j, int n) {
 }
 
 static inline int alive_ext(char *mat, int i, int j, int n) {
-    if (i == 0 || i == n - 1 || j == 0 || j == n - 1)
+    if (i == -1 || i == n || j == -1 || j == n)
         return 0;
     else
         return alive_now(mat, i, j, n);
@@ -85,15 +98,17 @@ static inline int alive_will(char *mat, int i, int j, int n)  {
     // alive :its neighbor alive is 2 or 3, alive,    otherwise dead.
     int n_alive = count_neighbor_alive(mat , i , j , n);
     if (alive_now(mat, i, j, n)) {
-        if (n_alive == 2 || n_alive == 3)
-            return 1;
-        else
-            return 0;
+        return (n_alive == 2 || n_alive == 3) ? 1: 0;
+        //if (n_alive == 2 || n_alive == 3)
+            //return 1;
+        //else
+            //return 0;
     } else {
-        if (n_alive == 3)
-            return 1;
-        else
-            return 0;
+        return (n_alive == 3) ? 1 : 0;
+        //if (n_alive == 3)
+            //return 1;
+        //else
+            //return 0;
     }
 }
 

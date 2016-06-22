@@ -1,4 +1,6 @@
-all: omp c 
+EXE = c omp
+
+all: ${EXE}
 
 omp: lu_mp.c config.h
 	clang-omp -fopenmp lu_mp.c -o omp -O2
@@ -9,4 +11,4 @@ c: lu_c.c config.h
 
 
 clean:
-	rm -f omp c
+	rm -f ${EXE}

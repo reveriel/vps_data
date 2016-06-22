@@ -14,6 +14,8 @@ int count_primes(int n);
 
 int main(int argc, char *argv[])
 {
+
+    omp_set_num_threads(1);
     //if (argc != 2) {
         //printf("usage : prime <n>\n");
         //return -1;
@@ -44,7 +46,7 @@ int is_prime(int n)
 int count_primes(int n)
 {
     omp_set_num_threads(8);
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic) num_threads(NUM_THREADS)
     for (int i = 4; i <= n; i ++) {
         if (is_prime(i)) {
             primes[i] = 1;
