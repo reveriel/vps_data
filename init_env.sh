@@ -6,14 +6,17 @@ sudo apt-get update
 
 ##############################
 # locale
-sudo apt-get install language-pack-en
+#sudo apt-get install language-pack-en
+sudo locale-gen en_US.UTF-8
+sudo dpkg-reconfigure locales
+export LANG=en_US.UTF-8
 
 
 
 ####################################
 # tools
-sudo apt-get install clang
-sudo apt-get install htop
+#sudo apt-get install clang
+sudo apt-get install -y htop 
 
 ###############################################
 # git

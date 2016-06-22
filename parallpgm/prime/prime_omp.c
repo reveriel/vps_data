@@ -7,7 +7,7 @@
 #include "config.h"
 #include "../common/stopwatch.h"
 
-int primes[N];
+int primes[N] = {0,0,1,1};
 
 
 int count_primes(int n);
@@ -43,13 +43,17 @@ int is_prime(int n)
 // return the number of primes from 2 to n
 int count_primes(int n)
 {
-    int cnt = 1;
     omp_set_num_threads(8);
-#pragma omp parallel for
-    for (int i = 2; i <= n; i ++) {
+#pragma omp parallel for schedule(dynamic)
+    for (int i = 4; i <= n; i ++) {
         if (is_prime(i)) {
-            cnt++;
+            primes[i] = 1;
         }
+    }
+    int cnt = 0;
+#pragma omp parallel for reduction(+:cnt) 
+    for (int i = 0; i <= n; i++) {
+        cnt += primes[i];
     }
     return cnt;
 }
