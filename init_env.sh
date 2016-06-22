@@ -26,7 +26,7 @@ git config user.email "reveriel@hotmail.com"
 
 ######################################
 # shell
-sudo apt-get install zsh
+sudo apt-get install -y zsh
 #sudo su
 #chsh ubuntu /bin/zsh
 #su ubuntu
